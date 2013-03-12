@@ -84,12 +84,17 @@ grails.project.dependency.resolution = {
                      'spring-context', 'spring-core', 'spring-jdbc', 'spring-orm', 'spring-tx',
                      'spring-web', 'spring-webmvc-portlet', 'spring-webmvc', 'testng'
         }
+
+        // Change to support grails 2.2.0
+        compile "org.spockframework:spock-grails-support:0.7-groovy-2.0"
     }
 
     plugins {
         build(':release:2.2.0', ':rest-client-builder:1.0.3') {
             export = false
         }
-        compile(':spock:0.7')
+        test(":spock:0.7") {
+            exclude "spock-grails-support"
+        }
     }
 }
