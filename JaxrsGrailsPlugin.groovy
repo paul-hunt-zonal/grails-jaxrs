@@ -101,11 +101,11 @@ Apache Wink are likely to be added in upcoming versions of the plugin.
 			'servlet' {
 				'servlet-name'('grails')
 				'servlet-class'(GrailsDispatcherServlet.name)
-				'load-on-startup'('1')
 				'init-param'{
 					'param-name'('dispatchOptionsRequest')
 					'param-value'('true')
 				}
+				'load-on-startup'('1')
 			}
 		}
     }
