@@ -15,7 +15,7 @@
  */
 
 grails.project.work.dir = 'target'
-grails.project.source.level = 1.6
+grails.project.source.level = 1.7
 
 grails.project.dependency.resolution = {
 
@@ -33,7 +33,7 @@ grails.project.dependency.resolution = {
         compile 'asm:asm:3.3'
 
         String restletVersion = '2.0.0'
-        String jerseyVersion = '1.14'
+        String jerseyVersion = '1.17.1'
 
         compile "org.restlet.gae:org.restlet:$restletVersion"
 
