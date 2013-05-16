@@ -51,7 +51,9 @@ class JaxRsIntegrationTestMixin implements JaxRsIntegrationTest {
     HttpServletResponse sendRequest(String url, String method, Map<String, Object> headers, byte[] content = ''.bytes) {
         resetResponse()
 
-        requestUrl = url
+        URI uri = new URI(url)
+        controller.request.queryString = uri.query
+        requestUrl = uri.path
         requestMethod = method
         requestContent = content
 
