@@ -17,16 +17,37 @@
 grails.project.work.dir = 'target'
 grails.project.source.level = 1.7
 
-grails.project.dependency.resolution = {
+/*
+ * in order to publish snapshots into the dedicated repo you should add to ~/.grails/settings.groovy the following entries
+ * 
+ * grails.project.repos.jaxrssnapshotsrepo.username = "yourlogin"
+ * grails.project.repos.jaxrssnapshotsrepo.password = "yourpassword"
+ * 
+ */
+grails.project.repos.jaxrssnapshotsrepo.url = "http://noams.artifactoryonline.com/noams/grails-jaxrs-plugin-snapshots"
+grails.project.repos.jaxrssnapshotsrepo.type = 'maven'
+if (!grails.project.repos.jaxrssnapshotsrepo.username) {
+    grails.project.repos.jaxrssnapshotsrepo.username = System.getProperty('snapshots.repo.username')
+    grails.project.repos.jaxrssnapshotsrepo.password = System.getProperty('snapshots.repo.password')
+}
 
-    inherits "global"
-    log "warn"
+grails.project.dependency.resolution = {
+    inherits('global') {
+        excludes 'hibernate'
+    }
+    log 'warn'
+
+    /*
+     * legacyResolve is needed in order to use release plugin 2.2.0 with grails 2.2.1 
+     * see http://www.objectpartners.com/2013/02/13/grails-2-2-publishing-your-plugins-as-maven-artifacts-to-resolve-dependency-resolution-issues/
+     */
+    legacyResolve true
 
     repositories {
         grailsCentral()
         mavenLocal()
         mavenCentral()
-        mavenRepo "http://maven.restlet.org"
+        mavenRepo 'http://maven.restlet.org'
     }
 
     dependencies {
@@ -38,7 +59,7 @@ grails.project.dependency.resolution = {
         compile "org.restlet.gae:org.restlet:$restletVersion"
 
         compile("org.restlet.gae:org.restlet.ext.servlet:$restletVersion") {
-            excludes 'servlet-api', 'org.restlet'
+            excludes 'org.restlet', 'servlet-api'
         }
 
         // A modified version (with removed META-INF/services/javax.ws.rs.ext.RuntimeDelegate)
@@ -47,29 +68,27 @@ grails.project.dependency.resolution = {
 //        compile "org.restlet.gae:org.restlet.ext.jaxrs:$restletVersion"
 
         compile("org.restlet.gae:org.restlet.ext.json:$restletVersion") {
-            excludes 'org.restlet.lib.org.json', 'org.restlet'
+            excludes 'org.restlet', 'org.restlet.lib.org.json'
         }
 
         compile("com.sun.jersey:jersey-core:$jerseyVersion") {
-            excludes 'jsr311-api', 'mail', 'jaxb-api', 'osgi_R4_core', 'junit'
+            excludes 'jaxb-api', 'jsr311-api', 'junit', 'mail', 'org.osgi.core'
         }
 
         compile("com.sun.jersey:jersey-servlet:$jerseyVersion") {
-            excludes 'javax.servlet-api', 'jsp-api', 'javax.ejb', 'weld-osgi-bundle',
-                     'persistence-api', 'ant', 'osgi_R4_core', 'junit', 'commons-io'
+            excludes 'ant', 'commons-io', 'javax.ejb', 'javax.servlet-api', 'jsp-api', 'junit', 'osgi_R4_core', 'persistence-api', 'weld-osgi-bundle'
         }
 
         compile("com.sun.jersey:jersey-server:$jerseyVersion") {
-            excludes 'asm', 'mail', 'jaxb-api', 'jsr250-api', 'osgi_R4_core', 'junit', 'commons-io'
+            excludes 'asm', 'commons-io', 'jaxb-api', 'jsr250-api', 'junit', 'mail', 'osgi_R4_core'
         }
 
         compile("com.sun.jersey:jersey-json:$jerseyVersion") {
-            excludes 'jettison', 'jaxb-impl', 'jackson-core-asl', 'jackson-mapper-asl',
-                     'jackson-jaxrs', 'jackson-xc', 'junit'
+            excludes 'jackson-core-asl', 'jackson-jaxrs', 'jackson-mapper-asl', 'jackson-xc', 'jaxb-impl', 'jettison', 'junit', 'org.eclipse.persistence.moxy'
         }
 
         compile("com.sun.jersey.contribs:jersey-spring:$jerseyVersion") {
-            excludes 'servlet-api', 'testng', 'jaxb-impl', 'jsr250-api', 'junit'
+            excludes 'jaxb-impl', 'jsr250-api', 'junit', 'servlet-api', 'testng'
         }
 
         compile('javax.ws.rs:jsr311-api:1.1.1') {
@@ -78,19 +97,18 @@ grails.project.dependency.resolution = {
 
         // until RequestStreamAdapter is re-implemented ...
         compile('org.springframework:spring-test:3.1.2.RELEASE') {
-            excludes 'activation', 'el-api', 'javax.inject', 'persistence-api', 'portlet-api',
-                     'servlet-api', 'jsp-api', 'geronimo-jta_1.1_spec', 'standard', 'aspectjweaver',
-                     'hibernate-core', 'hibernate-cglib-repack', 'hsqldb', 'junit', 'spring-beans',
-                     'spring-context', 'spring-core', 'spring-jdbc', 'spring-orm', 'spring-tx',
-                     'spring-web', 'spring-webmvc-portlet', 'spring-webmvc', 'testng'
+            excludes 'junit'
         }
 
-        // Change to support grails 2.2.0
-        compile "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+        /*
+         * needed for spock from grails 2.2
+         * see http://code.google.com/p/grails-jaxrs/issues/detail?id=74 and http://grails.org/plugin/spock
+         */
+        compile 'org.spockframework:spock-grails-support:0.7-groovy-2.0'
     }
 
     plugins {
-        build(':release:2.2.0', ':rest-client-builder:1.0.3') {
+        compile(':release:2.2.0', ':rest-client-builder:1.0.3') {
             export = false
         }
         test(":spock:0.7") {
