@@ -30,7 +30,7 @@ abstract class IntegrationTestCase implements JaxRsIntegrationTest {
 
     def grailsApplication
 
-    static transactional = false
+    static transactional = true
     static testEnvironment
 
     def controller
@@ -42,11 +42,15 @@ abstract class IntegrationTestCase implements JaxRsIntegrationTest {
         testEnvironment = null
     }
 
+    void grailsConfig(grailsApplication) {
+        grailsApplication.config.org.grails.jaxrs.dowriter.require.generic.collections = false
+        grailsApplication.config.org.grails.jaxrs.doreader.disable = true
+        grailsApplication.config.org.grails.jaxrs.dowriter.disable = true
+    }
+
     @Before
     void setUp() {
-        grailsApplication.config.org.grails.jaxrs.dowriter.require.generic.collections = false
-        grailsApplication.config.org.grails.jaxrs.doreader.disable = false
-        grailsApplication.config.org.grails.jaxrs.dowriter.disable = false
+        grailsConfig(grailsApplication)
 
         controller = new JaxrsController()
         defaultMixin = new JaxRsIntegrationTestMixin(controller)
